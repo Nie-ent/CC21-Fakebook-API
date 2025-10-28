@@ -1,4 +1,4 @@
-GET http://localhost:8899/api/auth
+GET http://localhost:8899
 ###
 
 GET http://localhost:8899/api/post
