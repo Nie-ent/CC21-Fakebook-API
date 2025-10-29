@@ -1,15 +1,15 @@
 CC21-Fakebook-API
 ===
-### <span style="color:lightblue">env guide</span>
-PORT=  
-DATBASE_URL=  
-JWT_SECRET=   
-===
+### env guide 
+PORT=   
+DATABASE_URL=  
+JWT_SECRET=  
 
-### <span style="color:lightblue">Service</span>
+---
+### service
 
-|path |method |authen |
-|:-- |:-: |:-: |
+|path |method |authen |params |query |body |
+|:-- |:-- |:-- |:-- |:-- |:-- |
 |/api/auth/login|post|-|-|-| {identity, password}
 |/api/auth/register|post|-|-|-| {identity, firstName, lastName, password, confirmPassword}
 |/api/auth/me|get|y|-|-|-|
