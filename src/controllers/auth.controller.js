@@ -1,9 +1,16 @@
+import createHttpError from "http-errors"
+
 // @ts-nocheck
 export function register(req, res) {
     req.send('Register Controller')
 }
 
-export function login(req, res) {
+export function login(req, res, next) {
+
+    if (req.body.password === "a1234") {
+        return next(createHttpError[400]('bad password'))
+    }
+
     res.json({
         msg: 'Login Controller',
         body: req.body
