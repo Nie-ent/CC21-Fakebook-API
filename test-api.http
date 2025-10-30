@@ -19,11 +19,27 @@ content-type: application/json
 
 {
  # "identity" : "1234567890",
-  "identity" : "someone1@ggg.mail",
+  "identity" : "someone3@ggg.mail",
  "firstName" : "someone",
  "lastName" : "codecamp",
- "password" : "1234567",
- "confirmPassword" : "1234567"
+ "password" : "123456",
+ "confirmPassword" : "123456"
 }
 
+###
+
+# Login api
+POST http://localhost:8899/api/auth/login HTTP/1.1
+content-type: application/json
+
+{
+ "identity" : "someone2@ggg.mail",
+ "password" : "123456"
+}
+###
+
+# Get me
+
+GET http://localhost:8899/api/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTc2MTc5NzA3MywiZXhwIjoxNzYzMDkzMDczfQ.otGAiSFBMIdyocNcM7Gr0urJWCbdKibTcO2uaCo6sQs
 ###

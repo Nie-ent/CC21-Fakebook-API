@@ -2,6 +2,8 @@ import { ZodError } from "zod"
 
 export default (err, req, res, next) => {
 
+    console.log('err', err)
+
     if (err.name === 'ZodError') {
         return res.status(400).json({
             success: false,

@@ -2,7 +2,9 @@ import createHttpError from "http-errors"
 import identityKeyUtils from "../utils/identity-key-utils.js"
 import prisma from "../config/prisma.config.js"
 import bcrypt from "bcryptjs"
-import { registerSchema } from "../validations/schema.js"
+import { loginSchema, registerSchema } from "../validations/schema.js"
+import jwt from 'jsonwebtoken'
+import { createUser, getUserBy } from "../services/user.service.js"
 
 // @ts-nocheck
 export async function register(req, res, next) {
@@ -11,12 +13,6 @@ export async function register(req, res, next) {
 
     const rs = registerSchema.parse(req.body)
 
-    console.log('rs =>', rs)
-
-    // if (confirmPassword !== password) {
-    //     return next(createHttpError(400, 'check confirm-password'))
-    // }
-
     const identityKey = identityKeyUtils(identity)
 
 
@@ -24,9 +20,7 @@ export async function register(req, res, next) {
         return next(createHttpError(400, 'identity must be email or phone number'))
     }
 
-    const haveUser = await prisma.user.findUnique({
-        where: { [identityKey]: identity }
-    })
+    const haveUser = await getUserBy(identityKey, identity)
 
     if (haveUser) {
         return next(createHttpError(409, 'This user already register'))
@@ -39,23 +33,50 @@ export async function register(req, res, next) {
         lastName: lastName
     }
 
-    const newUserResult = await prisma.user.create({ data: newUser })
+    const newUserResult = await createUser(newUser)
 
     res.json({ newUserResult })
 }
 
-export function login(req, res, next) {
+export const login = async (req, res, next) => {
 
-    if (req.body.password === "a1234") {
-        return next(createHttpError[400]('bad password'))
+    const { identity, password } = req.body
+    const user = loginSchema.parse(req.body)
+    const identityKey = user.identity.type
+    const identityValue = user.identity.value
+
+    const foundUser = await getUserBy(identityKey, identity)
+
+    console.log('foundUser', foundUser)
+
+    if (!foundUser) {
+        return next(createHttpError[401]('Invalid Login'))
     }
 
-    res.json({
-        msg: 'Login Controller',
-        body: req.body
+    let pwOk = await bcrypt.compare(password, foundUser.password)
+    if (!pwOk) {
+        return next(createHttpError[401]('Invalid Login'))
+    }
+
+    const { password: pw, createdAt, updatedAt, ...data } = foundUser
+
+    const payload = { id: foundUser.id }
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        algorithm: "HS256",
+        expiresIn: '15d'
     })
+
+
+    res.json({
+        msg: 'Login successful',
+        token: token,
+        user: { ...data }
+
+    })
+
 }
 
+
 export const getMe = (req, res) => {
-    res.json({ msg: 'GetMe controller' })
+    res.json({ user: req.user })
 }
