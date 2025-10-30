@@ -4,12 +4,18 @@ import errorMiddleware from './middlewares/error.middleware.js'
 import createHttpError from 'http-errors'
 import notFoundMiddleware from './middlewares/not-found.middleware.js'
 import shutdownUtil from './utils/shutdown.util.js'
+import cors from 'cors'
 
 
 const app = express()
 
-app.use(express.json())
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+}))
 
+app.use(express.json())
 
 //routes
 app.use('/api/auth', authRoute)
